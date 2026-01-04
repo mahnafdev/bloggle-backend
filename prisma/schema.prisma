@@ -26,6 +26,24 @@ enum ReactionType {
     NEGATIVE
 }
 
+//* Type - NotificationType
+enum NotificationType {
+    ANNOUNCEMENT
+    REVIEW_REQUEST
+    POST_REVIEW
+    POST_REACTION
+    POST_COMMENT
+    COMMENT_REACTION
+    COMMENT_REPLY
+}
+
+//* Type - NotificationSubjectType
+enum NotificationSubjectType {
+    PLATFORM
+    POST
+    COMMENT
+}
+
 //* Model - Post
 model Post {
     id                  String         @id @default(uuid()) @db.Uuid
@@ -63,4 +81,16 @@ model Comment {
     content    String
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
+}
+
+//* Model - Notification
+model Notification {
+    id           String                  @id @default(uuid()) @db.Uuid
+    receiver_id  String                  @db.Uuid
+    sender_id    String                  @db.Uuid
+    subject_id   String                  @db.Uuid
+    type         NotificationType
+    subject_type NotificationSubjectType
+    has_seen     Boolean                 @default(false)
+    created_at   DateTime                @default(now())
 }
