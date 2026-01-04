@@ -44,6 +44,41 @@ enum NotificationSubjectType {
     COMMENT
 }
 
+//* Type - ProfileGender
+enum ProfileGender {
+    MALE
+    FEMALE
+    LGBTQ_PLUS
+}
+
+//* Type - ProfilePronouns
+enum ProfilePronouns {
+    HE_HIM
+    SHE_HER
+    THEY_THEM
+}
+
+//* Model - Profile
+model Profile {
+    id           String          @id @default(uuid()) @db.Uuid
+    user_id      String          @unique @db.Uuid
+    display_name String          @db.VarChar(50)
+    phone        String?         @db.VarChar(17)
+    bio          String?         @db.VarChar(200)
+    is_verified  Boolean         @default(false)
+    picture      String
+    banner       String?
+    gender       ProfileGender
+    pronouns     ProfilePronouns
+    website      String?
+    facebook     String?
+    linkedin     String?
+    x_twitter    String?
+    instagram    String?
+    github       String?
+    updated_at   DateTime        @updatedAt
+}
+
 //* Model - Post
 model Post {
     id                  String         @id @default(uuid()) @db.Uuid
