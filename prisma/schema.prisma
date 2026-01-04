@@ -77,6 +77,8 @@ model Profile {
     instagram    String?
     github       String?
     updated_at   DateTime        @updatedAt
+
+    @@index([user_id])
 }
 
 //* Model - Post
@@ -97,6 +99,8 @@ model Post {
     status              PostStatus     @default(PENDING_REVIEW)
     reactions           Reaction[]
     comments            Comment[]
+
+    @@index([author_id])
 }
 
 //* Model - Reaction
@@ -109,6 +113,8 @@ model Reaction {
     comment    Comment?     @relation(fields: [comment_id], references: [id])
     type       ReactionType
     reacted_at DateTime     @default(now())
+
+    @@index([post_id])
 }
 
 //* Model - Comment
@@ -124,6 +130,10 @@ model Comment {
     updated_at DateTime   @updatedAt
     reactions  Reaction[]
     replies    Comment[]  @relation(name: "CommentReplies")
+
+    @@index([user_id])
+    @@index([post_id])
+    @@index([parent_id])
 }
 
 //! Future-planned Model
