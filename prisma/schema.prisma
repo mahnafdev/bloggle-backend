@@ -95,6 +95,8 @@ model Post {
     reviewed_at         DateTime?
     updated_at          DateTime       @updatedAt
     status              PostStatus     @default(PENDING_REVIEW)
+    reactions           Reaction[]
+    comments            Comment[]
 }
 
 //* Model - Reaction
@@ -102,30 +104,39 @@ model Reaction {
     id         String       @id @default(uuid()) @db.Uuid
     user_id    String       @db.Uuid
     post_id    String?      @db.Uuid
+    post       Post?        @relation(fields: [post_id], references: [id])
     comment_id String?      @db.Uuid
+    comment    Comment?     @relation(fields: [comment_id], references: [id])
     type       ReactionType
     reacted_at DateTime     @default(now())
 }
 
 //* Model - Comment
 model Comment {
-    id         String   @id @default(uuid()) @db.Uuid
-    user_id    String   @db.Uuid
-    post_id    String   @db.Uuid
-    parent_id  String?  @db.Uuid
+    id         String     @id @default(uuid()) @db.Uuid
+    user_id    String     @db.Uuid
+    post_id    String     @db.Uuid
+    post       Post       @relation(fields: [post_id], references: [id])
+    parent_id  String?    @db.Uuid
+    parent     Comment?   @relation(name: "CommentReplies", fields: [parent_id], references: [id])
     content    String
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    created_at DateTime   @default(now())
+    updated_at DateTime   @updatedAt
+    reactions  Reaction[]
+    replies    Comment[]  @relation(name: "CommentReplies")
 }
 
+//! Future-planned Model
 //* Model - Notification
-model Notification {
-    id           String                  @id @default(uuid()) @db.Uuid
-    receiver_id  String                  @db.Uuid
-    sender_id    String                  @db.Uuid
-    subject_id   String                  @db.Uuid
-    type         NotificationType
-    subject_type NotificationSubjectType
-    has_seen     Boolean                 @default(false)
-    created_at   DateTime                @default(now())
-}
+/**
+ * model Notification {
+ * id           String                  @id @default(uuid()) @db.Uuid
+ * receiver_id  String                  @db.Uuid
+ * sender_id    String                  @db.Uuid
+ * subject_id   String                  @db.Uuid
+ * type         NotificationType
+ * subject_type NotificationSubjectType
+ * has_seen     Boolean                 @default(false)
+ * created_at   DateTime                @default(now())
+ * }
+ */
