@@ -6,3 +6,34 @@ generator client {
 datasource db {
     provider = "postgresql"
 }
+
+//* Type - PostVisibility
+enum PostVisibility {
+    PRIVATE
+    PUBLIC
+}
+
+//* Type - PostStatus
+enum PostStatus {
+    PENDING_REVIEW
+    APPROVED
+    REJECTED
+}
+
+//* Model - Post
+model Post {
+    id                  String         @id @default(uuid()) @db.Uuid
+    author_id           String         @db.Uuid
+    thumbnail           String?
+    title               String         @db.VarChar(100)
+    content             String?
+    tags                String[]       @default([])
+    visibility          PostVisibility @default(PUBLIC)
+    read_time           String         @db.VarChar(7)
+    views               Int            @default(0)
+    is_featured         Boolean        @default(false)
+    review_requested_at DateTime       @default(now())
+    reviewed_at         DateTime?
+    updated_at          DateTime       @updatedAt
+    status              PostStatus     @default(PENDING_REVIEW)
+}
