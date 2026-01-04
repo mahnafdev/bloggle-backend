@@ -20,6 +20,12 @@ enum PostStatus {
     REJECTED
 }
 
+//* Type - ReactionType
+enum ReactionType {
+    POSITIVE
+    NEGATIVE
+}
+
 //* Model - Post
 model Post {
     id                  String         @id @default(uuid()) @db.Uuid
@@ -36,4 +42,14 @@ model Post {
     reviewed_at         DateTime?
     updated_at          DateTime       @updatedAt
     status              PostStatus     @default(PENDING_REVIEW)
+}
+
+//* Model - Reaction
+model Reaction {
+    id         String       @id @default(uuid()) @db.Uuid
+    user_id    String       @db.Uuid
+    post_id    String?      @db.Uuid
+    comment_id String?      @db.Uuid
+    type       ReactionType
+    reacted_at DateTime     @default(now())
 }
