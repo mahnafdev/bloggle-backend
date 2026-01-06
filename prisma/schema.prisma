@@ -60,80 +60,70 @@ enum ProfilePronouns {
 
 //* Model - Profile
 model Profile {
-    id           String          @id @default(uuid()) @db.Uuid
-    user_id      String          @unique @db.Uuid
-    display_name String          @db.VarChar(50)
-    phone        String?         @db.VarChar(17)
-    bio          String?         @db.VarChar(200)
-    is_verified  Boolean         @default(false)
-    picture      String
-    banner       String?
-    gender       ProfileGender
-    pronouns     ProfilePronouns
-    website      String?
-    facebook     String?
-    linkedin     String?
-    x_twitter    String?
-    instagram    String?
-    github       String?
-    updated_at   DateTime        @updatedAt
-
-    @@index([user_id])
+    id          String          @id @default(uuid()) @db.Uuid
+    userId      String          @unique @map("user_id") @db.Uuid
+    displayName String          @map("display_name") @db.VarChar(50)
+    phone       String?         @db.VarChar(17)
+    bio         String?         @db.VarChar(200)
+    isVerified  Boolean         @default(false) @map("is_verified")
+    picture     String
+    banner      String?
+    gender      ProfileGender
+    pronouns    ProfilePronouns
+    website     String?
+    facebook    String?
+    linkedin    String?
+    xTwitter    String?         @map("x_twitter")
+    instagram   String?
+    github      String?
+    updatedAt   DateTime        @updatedAt @map("updated_at")
 }
 
 //* Model - Post
 model Post {
-    id                  String         @id @default(uuid()) @db.Uuid
-    author_id           String         @db.Uuid
-    thumbnail           String?
-    title               String         @db.VarChar(100)
-    content             String?
-    tags                String[]       @default([])
-    visibility          PostVisibility @default(PUBLIC)
-    read_time           String         @db.VarChar(7)
-    views               Int            @default(0)
-    is_featured         Boolean        @default(false)
-    review_requested_at DateTime       @default(now())
-    reviewed_at         DateTime?
-    updated_at          DateTime       @updatedAt
-    status              PostStatus     @default(PENDING_REVIEW)
-    reactions           Reaction[]
-    comments            Comment[]
-
-    @@index([author_id])
+    id                String         @id @default(uuid()) @db.Uuid
+    authorId          String         @map("author_id") @db.Uuid
+    thumbnail         String?
+    title             String         @db.VarChar(100)
+    content           String?
+    tags              String[]       @default([])
+    visibility        PostVisibility @default(PUBLIC)
+    readTime          String         @map("read_time") @db.VarChar(7)
+    views             Int            @default(0)
+    isFeatured        Boolean        @default(false) @map("is_featured")
+    reviewRequestedAt DateTime       @default(now()) @map("review_requested_at")
+    reviewedAt        DateTime?      @map("reviewed_at")
+    updatedAt         DateTime       @updatedAt @map("updated_at")
+    status            PostStatus     @default(PENDING_REVIEW)
+    reactions         Reaction[]
+    comments          Comment[]
 }
 
 //* Model - Reaction
 model Reaction {
-    id         String       @id @default(uuid()) @db.Uuid
-    user_id    String       @db.Uuid
-    post_id    String?      @db.Uuid
-    post       Post?        @relation(fields: [post_id], references: [id])
-    comment_id String?      @db.Uuid
-    comment    Comment?     @relation(fields: [comment_id], references: [id])
-    type       ReactionType
-    reacted_at DateTime     @default(now())
-
-    @@index([post_id])
+    id        String       @id @default(uuid()) @db.Uuid
+    userId    String       @map("user_id") @db.Uuid
+    postId    String?      @map("post_id") @db.Uuid
+    post      Post?        @relation(fields: [postId], references: [id])
+    commentId String?      @map("comment_id") @db.Uuid
+    comment   Comment?     @relation(fields: [commentId], references: [id])
+    type      ReactionType
+    reactedAt DateTime     @default(now()) @map("reacted_at")
 }
 
 //* Model - Comment
 model Comment {
-    id         String     @id @default(uuid()) @db.Uuid
-    user_id    String     @db.Uuid
-    post_id    String     @db.Uuid
-    post       Post       @relation(fields: [post_id], references: [id])
-    parent_id  String?    @db.Uuid
-    parent     Comment?   @relation(name: "CommentReplies", fields: [parent_id], references: [id])
-    content    String
-    created_at DateTime   @default(now())
-    updated_at DateTime   @updatedAt
-    reactions  Reaction[]
-    replies    Comment[]  @relation(name: "CommentReplies")
-
-    @@index([user_id])
-    @@index([post_id])
-    @@index([parent_id])
+    id        String     @id @default(uuid()) @db.Uuid
+    userId    String     @map("user_id") @db.Uuid
+    postId    String     @map("post_id") @db.Uuid
+    post      Post       @relation(fields: [postId], references: [id])
+    parentId  String?    @map("parent_id") @db.Uuid
+    parent    Comment?   @relation(name: "CommentReplies", fields: [parentId], references: [id])
+    content   String
+    createdAt DateTime   @default(now()) @map("created_at")
+    updatedAt DateTime   @updatedAt @map("updated_at")
+    reactions Reaction[]
+    replies   Comment[]  @relation(name: "CommentReplies")
 }
 
 //! Future-planned Model

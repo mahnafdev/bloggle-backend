@@ -1,6 +1,6 @@
 {
 	"name": "bloggle-backend",
-	"version": "0.0.3",
+	"version": "0.1.1",
 	"description": "Main Backend Web Server of Bloggle",
 	"main": "server.js",
 	"scripts": {
