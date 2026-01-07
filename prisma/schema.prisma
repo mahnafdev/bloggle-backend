@@ -61,11 +61,11 @@ enum ProfilePronouns {
 //* Model - Profile
 model Profile {
     id          String          @id @default(uuid()) @db.Uuid
-    userId      String          @unique @map("user_id") @db.Uuid
-    displayName String          @map("display_name") @db.VarChar(50)
+    userId      String          @unique @db.Uuid
+    displayName String          @db.VarChar(50)
     phone       String?         @db.VarChar(17)
     bio         String?         @db.VarChar(200)
-    isVerified  Boolean         @default(false) @map("is_verified")
+    isVerified  Boolean         @default(false)
     picture     String
     banner      String?
     gender      ProfileGender
@@ -73,27 +73,27 @@ model Profile {
     website     String?
     facebook    String?
     linkedin    String?
-    xTwitter    String?         @map("x_twitter")
+    xTwitter    String?
     instagram   String?
     github      String?
-    updatedAt   DateTime        @updatedAt @map("updated_at")
+    updatedAt   DateTime        @updatedAt
 }
 
 //* Model - Post
 model Post {
     id                String         @id @default(uuid()) @db.Uuid
-    authorId          String         @map("author_id") @db.Uuid
+    authorId          String         @db.Uuid
     thumbnail         String?
     title             String         @db.VarChar(100)
     content           String?
     tags              String[]       @default([])
     visibility        PostVisibility @default(PUBLIC)
-    readTime          String         @map("read_time") @db.VarChar(7)
+    readTime          String         @db.VarChar(7)
     views             Int            @default(0)
-    isFeatured        Boolean        @default(false) @map("is_featured")
-    reviewRequestedAt DateTime       @default(now()) @map("review_requested_at")
-    reviewedAt        DateTime?      @map("reviewed_at")
-    updatedAt         DateTime       @updatedAt @map("updated_at")
+    isFeatured        Boolean        @default(false)
+    reviewRequestedAt DateTime       @default(now())
+    reviewedAt        DateTime?
+    updatedAt         DateTime       @updatedAt
     status            PostStatus     @default(PENDING_REVIEW)
     reactions         Reaction[]
     comments          Comment[]
@@ -102,26 +102,26 @@ model Post {
 //* Model - Reaction
 model Reaction {
     id        String       @id @default(uuid()) @db.Uuid
-    userId    String       @map("user_id") @db.Uuid
-    postId    String?      @map("post_id") @db.Uuid
+    userId    String       @db.Uuid
+    postId    String?      @db.Uuid
     post      Post?        @relation(fields: [postId], references: [id])
-    commentId String?      @map("comment_id") @db.Uuid
+    commentId String?      @db.Uuid
     comment   Comment?     @relation(fields: [commentId], references: [id])
     type      ReactionType
-    reactedAt DateTime     @default(now()) @map("reacted_at")
+    reactedAt DateTime     @default(now())
 }
 
 //* Model - Comment
 model Comment {
     id        String     @id @default(uuid()) @db.Uuid
-    userId    String     @map("user_id") @db.Uuid
-    postId    String     @map("post_id") @db.Uuid
+    userId    String     @db.Uuid
+    postId    String     @db.Uuid
     post      Post       @relation(fields: [postId], references: [id])
-    parentId  String?    @map("parent_id") @db.Uuid
+    parentId  String?    @db.Uuid
     parent    Comment?   @relation(name: "CommentReplies", fields: [parentId], references: [id])
     content   String
-    createdAt DateTime   @default(now()) @map("created_at")
-    updatedAt DateTime   @updatedAt @map("updated_at")
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
     reactions Reaction[]
     replies   Comment[]  @relation(name: "CommentReplies")
 }
@@ -131,12 +131,12 @@ model Comment {
 /**
  * model Notification {
  * id           String                  @id @default(uuid()) @db.Uuid
- * receiver_id  String                  @db.Uuid
- * sender_id    String                  @db.Uuid
- * subject_id   String                  @db.Uuid
+ * receiverId  String                  @db.Uuid
+ * senderId    String                  @db.Uuid
+ * subjectId   String                  @db.Uuid
  * type         NotificationType
- * subject_type NotificationSubjectType
- * has_seen     Boolean                 @default(false)
- * created_at   DateTime                @default(now())
+ * subjectType NotificationSubjectType
+ * hasSeen     Boolean                 @default(false)
+ * createdAt   DateTime                @default(now())
  * }
  */

@@ -1,10 +1,14 @@
 import express, { Application } from "express";
+import { postsRouter } from "./modules/posts/posts.router.ts";
 
 //* Express App
 const app: Application = express();
 
 //* Global Middlewares
-app.use(express());
+app.use(express.json());
+
+//* Modules
+app.use("/api/v1/posts", postsRouter);
 
 //* GET /
 app.get("/", (_req, res) => {
