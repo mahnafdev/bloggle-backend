@@ -6,17 +6,17 @@ const PORT = process.env.PORT || 8080;
 
 async function main() {
 	try {
-		//* Connect to DB
+		// Connect to DB
 		await prisma.$connect();
 		console.log("[SUCCESS] Connected to DB");
-		//* Listen to server
+		// Listen to server
 		app.listen(PORT, () => {
 			console.log(`[SUCCESS] Bloggle server is running on localhost:${PORT}`);
 		});
 	} catch (err) {
-		//* Log error
+		// Log error
 		console.error("[ERROR] A server error:", err);
-		//* Disconnect from DB
+		// Disconnect from DB
 		await prisma.$disconnect();
 		process.exit(1);
 	}

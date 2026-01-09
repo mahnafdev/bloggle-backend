@@ -1,8 +1,13 @@
 import express, { Application } from "express";
 import { postsRouter } from "./modules/posts/posts.router.ts";
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "./lib/auth.ts";
 
 //* Express App
 const app: Application = express();
+
+//* Auth Route Handler
+app.all("/api/v1/auth/*splat", toNodeHandler(auth));
 
 //* Global Middlewares
 app.use(express.json());
