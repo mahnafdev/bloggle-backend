@@ -1,8 +1,9 @@
-import express, { Application } from "express";
-import { postsRouter } from "./modules/posts/posts.router.ts";
 import { toNodeHandler } from "better-auth/node";
-import { auth } from "./lib/auth.ts";
 import cors from "cors";
+import "dotenv/config";
+import express, { Application } from "express";
+import { auth } from "./lib/auth.ts";
+import { postsRouter } from "./modules/posts/posts.router.ts";
 //* Express App
 const app: Application = express();
 

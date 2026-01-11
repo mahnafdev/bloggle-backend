@@ -1,6 +1,18 @@
-import { betterAuth, env } from "better-auth";
+import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { createTransport } from "nodemailer";
 import { prisma } from "./prisma.ts";
+
+//* Email Transporter
+const emailTransporter = createTransport({
+	host: "smtp.gmail.com",
+	port: 587,
+	secure: false,
+	auth: {
+		user: process.env.APP_EMAIL,
+		pass: process.env.APP_PASS,
+	},
+});
 
 //* Better-Auth Initialization
 const auth = betterAuth({
@@ -18,6 +30,111 @@ const auth = betterAuth({
 		autoSignIn: false,
 		minPasswordLength: 6,
 		requireEmailVerification: true,
+	},
+	emailVerification: {
+		sendOnSignUp: true,
+		sendVerificationEmail: async ({ user, url: verificationUrl, token: userToken }) => {
+			// Email HTML Body
+			const emailBody = `
+            <!DOCTYPE html>
+            <html lang="en">
+                <head>
+                    <meta charset="UTF-8" />
+                    <title>Verify Your Email</title>
+
+                    <style>
+                        body {
+                            margin: 0;
+                            padding: 0;
+                            font-family: Arial, Helvetica, sans-serif;
+                        }
+
+                        .wrapper {
+                            width: 95%;
+                            padding: 2rem;
+                            background-color: #ffffff;
+                        }
+
+                        .container {
+                            max-width: 35rem;
+                            margin: 0 auto;
+                            background-color: #f4f6f8;
+                            border-radius: 1rem;
+                            padding: 2rem;
+                        }
+
+                        .heading {
+                            font-size: 1.5rem;
+                            font-weight: 600;
+                            text-align: center;
+                            color: #22283f;
+                            margin-bottom: 0.5rem;
+                        }
+
+                        .paragraph {
+                            font-size: 1rem;
+                            text-align: center;
+                            line-height: 1.6;
+                            color: #374151;
+                        }
+
+                        .button-wrapper {
+                            text-align: center;
+                            margin: 1.5rem;
+                        }
+
+                        .button {
+                            display: inline-block;
+                            background-color: #35424f;
+                            color: #f4f6f8 !important;
+                            text-decoration: none;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            padding: 0.75rem 1.3rem;
+                            border-radius: 0.5rem;
+                        }
+
+                        .footer-text {
+                            font-size: 1rem;
+                            text-align: center;
+                            line-height: 1.6;
+                            color: #5b6272;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="wrapper">
+                        <div class="container">
+
+                        <div class="heading">
+                            Verify Your Email Address
+                        </div>
+
+                        <div class="paragraph">
+                            To complete your account setup, please confirm your email address. This step helps us to ensure your account is secure and maintain platform integrity.
+                        </div>
+
+                        <div class="button-wrapper">
+                            <a href="${verificationUrl}" class="button">
+                                Verify Email
+                            </a>
+                        </div>
+
+                        <div class="footer-text">
+                            This verification link will expire soon for security reasons. If you did not create this account, you can safely ignore this email.
+                        </div>
+                    </div>
+                </body>
+            </html>
+            `;
+			// Send Email
+			await emailTransporter.sendMail({
+				from: `"Bloggle" <mahnaf.swe@gmail.com>`,
+				to: user.email,
+				subject: "Verify Your Email",
+				html: emailBody,
+			});
+		},
 	},
 });
 
