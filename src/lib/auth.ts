@@ -146,6 +146,14 @@ const auth = betterAuth({
 			accessType: "offline",
 			prompt: "select_account consent",
 			responseMode: "form_post",
+			scope: ["openid", "email", "profile", "https://www.googleapis.com/auth/blogger"],
+		},
+		github: {
+			enabled: true,
+			clientId: process.env.GITHUB_CLIENT_ID!,
+			clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+			responseMode: "form_post",
+			scope: ["read:user", "user:email"],
 		},
 	},
 });
