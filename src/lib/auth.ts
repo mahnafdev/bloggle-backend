@@ -33,6 +33,7 @@ const auth = betterAuth({
 	},
 	emailVerification: {
 		sendOnSignUp: true,
+		autoSignInAfterVerification: true,
 		sendVerificationEmail: async ({ user, url: verificationUrl, token: userToken }) => {
 			// Email HTML Body
 			const emailBody = `
@@ -134,6 +135,17 @@ const auth = betterAuth({
 				subject: "Verify Your Email",
 				html: emailBody,
 			});
+		},
+	},
+	// OAuth Providers
+	socialProviders: {
+		google: {
+			enabled: true,
+			clientId: process.env.GOOGLE_CLIENT_ID!,
+			clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+			accessType: "offline",
+			prompt: "select_account consent",
+			responseMode: "form_post",
 		},
 	},
 });
