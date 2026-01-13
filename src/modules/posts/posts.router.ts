@@ -6,5 +6,7 @@ const router = Router();
 
 // POST /
 router.post("/", postsController.createPost);
+// GET /
+router.get("/", postsController.getPosts);
 
 export { router as postsRouter };
