@@ -1,0 +1,11 @@
+-- AlterTable
+ALTER TABLE "Comment" ALTER COLUMN "userId" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "Post" ALTER COLUMN "authorId" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "Profile" ALTER COLUMN "userId" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "Reaction" ALTER COLUMN "userId" SET DATA TYPE TEXT;

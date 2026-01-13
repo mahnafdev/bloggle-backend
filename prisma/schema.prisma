@@ -94,7 +94,7 @@ model Account {
 //* Model - Profile
 model Profile {
     id          String          @id @default(uuid()) @db.Uuid
-    userId      String          @unique @db.Uuid
+    userId      String          @unique
     displayName String          @db.VarChar(50)
     phone       String?         @db.VarChar(17)
     bio         String?         @db.VarChar(200)
@@ -142,7 +142,7 @@ model Verification {
 //* Model - Post
 model Post {
     id                String         @id @default(uuid()) @db.Uuid
-    authorId          String         @db.Uuid
+    authorId          String
     thumbnail         String?
     title             String         @db.VarChar(100)
     content           String?
@@ -162,7 +162,7 @@ model Post {
 //* Model - Reaction
 model Reaction {
     id        String       @id @default(uuid()) @db.Uuid
-    userId    String       @db.Uuid
+    userId    String
     postId    String?      @db.Uuid
     post      Post?        @relation(fields: [postId], references: [id])
     commentId String?      @db.Uuid
@@ -174,7 +174,7 @@ model Reaction {
 //* Model - Comment
 model Comment {
     id        String     @id @default(uuid()) @db.Uuid
-    userId    String     @db.Uuid
+    userId    String
     postId    String     @db.Uuid
     post      Post       @relation(fields: [postId], references: [id])
     parentId  String?    @db.Uuid
@@ -191,9 +191,9 @@ model Comment {
 /**
  * model Notification {
  * id          String                  @id @default(uuid()) @db.Uuid
- * receiverId  String                  @db.Uuid
- * senderId    String                  @db.Uuid
- * subjectId   String                  @db.Uuid
+ * receiverId  String
+ * senderId    String
+ * subjectId   String
  * type        NotificationType
  * subjectType NotificationSubjectType
  * hasSeen     Boolean                 @default(false)
