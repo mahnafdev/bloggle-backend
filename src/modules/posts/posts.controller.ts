@@ -5,7 +5,7 @@ import { postsService } from "./posts.service.ts";
 //* Create A Post
 const createPost = async (req: Request, res: Response) => {
 	try {
-		// Nuts and bolts
+		// Nuts and Bolts
 		const post: Post = await postsService.createPost(req.body);
 		// 201 success response
 		res.status(201).json({
@@ -27,11 +27,15 @@ const createPost = async (req: Request, res: Response) => {
 	}
 };
 
-//* Get All Posts
+//* Get Posts
 const getPosts = async (req: Request, res: Response) => {
 	try {
-		// Nuts and bolts
-		const posts: Post[] = await postsService.getPosts();
+		// Query Params
+		const query = req.query;
+		const search = query.search ? query.search.toString() : "";
+		const tags = query.tags ? query.tags.toString().split(",") : [];
+		// Nuts and Bolts
+		const posts: Post[] = await postsService.getPosts({ search, tags });
 		// 200 success response
 		res.status(200).json({
 			success: true,
