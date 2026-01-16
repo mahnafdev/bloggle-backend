@@ -37,14 +37,14 @@ const getPosts = async (req: Request, res: Response) => {
 		// Nuts and Bolts
 		const posts: Post[] = await postsService.getPosts({ search, tags });
 		// 200 success response
-		res.status(200).json({
+		return res.status(200).json({
 			success: true,
 			message: "Posts retrieved successfully",
 			data: posts,
 		});
 	} catch (err: any) {
 		// 500 error response
-		res.status(500).json({
+		return res.status(500).json({
 			success: false,
 			message: "Unable to retrieve posts",
 			error: {
