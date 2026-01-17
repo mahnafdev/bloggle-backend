@@ -3,6 +3,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { createTransport } from "nodemailer";
 import { prisma } from "./prisma.ts";
 import { admin } from "better-auth/plugins";
+import { adminClient } from "better-auth/client/plugins";
 
 //* Email Transporter
 const emailTransporter = createTransport({
@@ -158,7 +159,7 @@ const auth = betterAuth({
 		},
 	},
 	// Plugins
-	plugins: [admin()],
+	plugins: [admin(), adminClient()],
 });
 
 export { auth };

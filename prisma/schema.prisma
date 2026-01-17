@@ -8,12 +8,14 @@ datasource db {
 }
 
 //* Type - PostVisibility
+
 enum PostVisibility {
     PRIVATE
     PUBLIC
 }
 
 //* Type - PostStatus
+
 enum PostStatus {
     PENDING_REVIEW
     APPROVED
@@ -21,12 +23,14 @@ enum PostStatus {
 }
 
 //* Type - ReactionType
+
 enum ReactionType {
     POSITIVE
     NEGATIVE
 }
 
 //* Type - NotificationType
+
 enum NotificationType {
     ANNOUNCEMENT
     REVIEW_REQUEST
@@ -38,6 +42,7 @@ enum NotificationType {
 }
 
 //* Type - NotificationSubjectType
+
 enum NotificationSubjectType {
     PLATFORM
     POST
@@ -45,6 +50,7 @@ enum NotificationSubjectType {
 }
 
 //* Type - ProfileGender
+
 enum ProfileGender {
     MALE
     FEMALE
@@ -52,6 +58,7 @@ enum ProfileGender {
 }
 
 //* Type - ProfilePronouns
+
 enum ProfilePronouns {
     HE_HIM
     SHE_HER
@@ -59,6 +66,7 @@ enum ProfilePronouns {
 }
 
 //* Model - User
+
 model User {
     id            String    @id
     name          String
@@ -69,9 +77,14 @@ model User {
     updatedAt     DateTime  @updatedAt
     sessions      Session[]
     accounts      Account[]
+    role          String?
+    banned        Boolean?  @default(false)
+    banReason     String?
+    banExpires    DateTime?
 }
 
 //* Model - Account
+
 model Account {
     id                    String    @id
     accountId             String
@@ -92,6 +105,7 @@ model Account {
 }
 
 //* Model - Profile
+
 model Profile {
     id          String          @id @default(uuid()) @db.Uuid
     userId      String          @unique
@@ -113,21 +127,24 @@ model Profile {
 }
 
 //* Model - Session
+
 model Session {
-    id        String   @id
-    expiresAt DateTime
-    token     String   @unique
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    ipAddress String?
-    userAgent String?
-    userId    String
-    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id             String   @id
+    expiresAt      DateTime
+    token          String   @unique
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+    ipAddress      String?
+    userAgent      String?
+    userId         String
+    user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    impersonatedBy String?
 
     @@index([userId])
 }
 
 //* Model - Verification
+
 model Verification {
     id         String   @id
     identifier String
@@ -140,6 +157,7 @@ model Verification {
 }
 
 //* Model - Post
+
 model Post {
     id                String         @id @default(uuid()) @db.Uuid
     authorId          String
@@ -160,6 +178,7 @@ model Post {
 }
 
 //* Model - Reaction
+
 model Reaction {
     id        String       @id @default(uuid()) @db.Uuid
     userId    String
@@ -172,6 +191,7 @@ model Reaction {
 }
 
 //* Model - Comment
+
 model Comment {
     id        String     @id @default(uuid()) @db.Uuid
     userId    String
@@ -188,6 +208,7 @@ model Comment {
 
 //! Future-planned Model
 //* Model - Notification
+
 /**
  * model Notification {
  * id          String                  @id @default(uuid()) @db.Uuid
