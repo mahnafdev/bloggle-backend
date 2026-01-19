@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Post } from "../../../generated/prisma/client.ts";
+import { Post, PostStatus, PostVisibility } from "../../../generated/prisma/client.ts";
 import { postsService } from "./posts.service.ts";
 
 //* Create A Post
@@ -32,12 +32,12 @@ const getPosts = async (req: Request, res: Response) => {
 	try {
 		// Query Params
 		const query = req.query;
-		const id = query.id ? query.id.toString() : "";
-		const authorId = query.authorId ? query.authorId.toString() : "";
-		const search = query.search ? query.search.toString() : "";
-		const status = query.status ? query.status.toString() : "";
-		const visibility = query.visibility ? query.visibility.toString() : "";
-		const tags = query.tags ? query.tags.toString().split(",") : [];
+		const id = query.id as string | undefined;
+		const authorId = query.authorId as string | undefined;
+		const search = query.search as string | undefined;
+		const status = query.status as PostStatus | undefined;
+		const visibility = query.visibility as PostVisibility | undefined;
+		const tags = query.tags ? (query.tags as string).split(",") : [];
 		const isFeatured = query.isFeatured
 			? query.isFeatured === "true"
 				? true
@@ -46,7 +46,7 @@ const getPosts = async (req: Request, res: Response) => {
 					: undefined
 			: undefined;
 		// Nuts and Bolts
-		const posts: Post[] | Post = await postsService.getPosts({
+		const posts: Post[] | Post | null = await postsService.getPosts({
 			id,
 			authorId,
 			search,

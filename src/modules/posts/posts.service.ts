@@ -1,4 +1,4 @@
-import { Post, PostVisibility } from "../../../generated/prisma/client.ts";
+import { Post, PostStatus, PostVisibility } from "../../../generated/prisma/client.ts";
 import { prisma } from "../../lib/prisma.ts";
 
 //* Insert a Post
@@ -22,22 +22,22 @@ const createPost = async (
 
 //* Retrieve Posts
 const getPosts = async (q: {
-	id: string;
-	authorId: string;
-	search: string;
-	status: string;
-	visibility: string;
-	tags: string[];
+	id: string | undefined;
+	authorId: string | undefined;
+	search: string | undefined;
+	status: PostStatus | undefined;
+	visibility: PostVisibility | undefined;
+	tags: string[] | [];
 	isFeatured: boolean | undefined;
-}): Promise<Post[] | Post> => {
+}): Promise<Post[] | Post | null> => {
 	// Retrieve posts with/without filters
 	if (q.id) {
 		// Filter by ID
-		const result = (await prisma.post.findUnique({
+		const result = await prisma.post.findUnique({
 			where: {
 				id: q.id,
 			},
-		})) as Post | [];
+		});
 		// Return result
 		return result;
 	} else {
@@ -90,7 +90,7 @@ const getPosts = async (q: {
 		// Filter by visibility
 		if (q.visibility) {
 			conditions.push({
-				visibility: q.visibility as PostVisibility,
+				visibility: q.visibility,
 			});
 		}
 		// Filter by isFeatured
