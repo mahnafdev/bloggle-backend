@@ -32,10 +32,29 @@ const getPosts = async (req: Request, res: Response) => {
 	try {
 		// Query Params
 		const query = req.query;
+		const id = query.id ? query.id.toString() : "";
+		const authorId = query.authorId ? query.authorId.toString() : "";
 		const search = query.search ? query.search.toString() : "";
+		const status = query.status ? query.status.toString() : "";
+		const visibility = query.visibility ? query.visibility.toString() : "";
 		const tags = query.tags ? query.tags.toString().split(",") : [];
+		const isFeatured = query.isFeatured
+			? query.isFeatured === "true"
+				? true
+				: query.isFeatured === "false"
+					? false
+					: undefined
+			: undefined;
 		// Nuts and Bolts
-		const posts: Post[] = await postsService.getPosts({ search, tags });
+		const posts: Post[] | Post = await postsService.getPosts({
+			id,
+			authorId,
+			search,
+			status,
+			visibility,
+			tags,
+			isFeatured,
+		})!;
 		// 200 success response
 		return res.status(200).json({
 			success: true,
