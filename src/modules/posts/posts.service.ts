@@ -29,6 +29,10 @@ const getPosts = async (q: {
 	visibility: PostVisibility | undefined;
 	tags: string[] | [];
 	isFeatured: boolean | undefined;
+	sortBy: string | undefined;
+	orderBy: "asc" | "desc" | undefined;
+	page: number | undefined;
+	limit: number | undefined;
 }): Promise<Post[] | Post | null> => {
 	// Retrieve posts with/without filters
 	if (q.id) {
@@ -41,8 +45,14 @@ const getPosts = async (q: {
 		// Return result
 		return result;
 	} else {
-		// Initialize conditions
+		// Initialize querying objects
 		const conditions: object[] = [];
+		const presentation: {
+			sortBy?: string;
+			orderBy?: "asc" | "desc";
+			skip?: number;
+			take?: number;
+		} = {};
 		// Filter by authorId
 		if (q.authorId) {
 			conditions.push({
@@ -99,10 +109,25 @@ const getPosts = async (q: {
 				isFeatured: q.isFeatured,
 			});
 		}
+		// Sort
+		if (q.sortBy && q.orderBy) {
+			presentation.sortBy = q.sortBy;
+			presentation.orderBy = q.orderBy;
+		}
+		// Offset pagination
+		if (q.limit && q.page) {
+			presentation.skip = q.limit * (q.page - 1);
+			presentation.take = q.limit;
+		}
 		// Fetch data with filters
 		const result = await prisma.post.findMany({
 			where: {
 				AND: conditions,
+			},
+			skip: presentation.skip,
+			take: presentation.take,
+			orderBy: {
+				[presentation.sortBy as string]: presentation.orderBy,
 			},
 		});
 		// Return result

@@ -45,6 +45,10 @@ const getPosts = async (req: Request, res: Response) => {
 					? false
 					: undefined
 			: undefined;
+		const sortBy = query.sortBy as string | undefined;
+		const orderBy = query.orderBy as "asc" | "desc" | undefined;
+		const page = Number(query.page) as number | undefined;
+		const limit = Number(query.limit) as number | undefined;
 		// Nuts and Bolts
 		const posts: Post[] | Post | null = await postsService.getPosts({
 			id,
@@ -54,6 +58,10 @@ const getPosts = async (req: Request, res: Response) => {
 			visibility,
 			tags,
 			isFeatured,
+			sortBy,
+			orderBy,
+			page,
+			limit,
 		})!;
 		// 200 success response
 		return res.status(200).json({
