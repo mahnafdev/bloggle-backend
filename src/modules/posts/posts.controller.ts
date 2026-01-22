@@ -30,9 +30,8 @@ const createPost = async (req: Request, res: Response) => {
 //* Get Posts
 const getPosts = async (req: Request, res: Response) => {
 	try {
-		// Query Params
+		// Receive query params
 		const query = req.query;
-		const id = query.id as string | undefined;
 		const authorId = query.authorId as string | undefined;
 		const search = query.search as string | undefined;
 		const status = query.status as PostStatus | undefined;
@@ -49,9 +48,7 @@ const getPosts = async (req: Request, res: Response) => {
 		const orderBy = query.orderBy as "asc" | "desc" | undefined;
 		const page = Number(query.page) as number | undefined;
 		const limit = Number(query.limit) as number | undefined;
-		// Nuts and Bolts
-		const posts: Post[] | Post | null = await postsService.getPosts({
-			id,
+		const queryParams = {
 			authorId,
 			search,
 			status,
@@ -62,12 +59,25 @@ const getPosts = async (req: Request, res: Response) => {
 			orderBy,
 			page,
 			limit,
-		})!;
+		};
+		// Nuts and Bolts
+		const result: { posts: Post[]; total: number } =
+			await postsService.getPosts(queryParams);
+		// Filter useless params
+		const usedQueryParams = Object.fromEntries(
+			Object.entries(queryParams).filter(([_, value]) => {
+				if (!value) return false;
+				if (Array.isArray(value) && value.length === 0) return false;
+				return true;
+			}),
+		);
 		// 200 success response
 		return res.status(200).json({
 			success: true,
 			message: "Posts retrieved successfully",
-			data: posts,
+			total: result.total,
+			params: usedQueryParams,
+			data: result.posts,
 		});
 	} catch (err: any) {
 		// 500 error response

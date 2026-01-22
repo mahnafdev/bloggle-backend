@@ -22,7 +22,6 @@ const createPost = async (
 
 //* Retrieve Posts
 const getPosts = async (q: {
-	id: string | undefined;
 	authorId: string | undefined;
 	search: string | undefined;
 	status: PostStatus | undefined;
@@ -33,106 +32,104 @@ const getPosts = async (q: {
 	orderBy: "asc" | "desc" | undefined;
 	page: number | undefined;
 	limit: number | undefined;
-}): Promise<Post[] | Post | null> => {
+}): Promise<{ posts: Post[]; total: number }> => {
 	// Retrieve posts with/without filters
-	if (q.id) {
-		// Filter by ID
-		const result = await prisma.post.findUnique({
-			where: {
-				id: q.id,
-			},
+	// Initialize querying objects
+	const conditions: object[] = [];
+	const presentation: {
+		sortBy?: string;
+		orderBy?: "asc" | "desc";
+		skip?: number;
+		take?: number;
+	} = {};
+	// Filter by authorId
+	if (q.authorId) {
+		conditions.push({
+			authorId: q.authorId,
 		});
-		// Return result
-		return result;
-	} else {
-		// Initialize querying objects
-		const conditions: object[] = [];
-		const presentation: {
-			sortBy?: string;
-			orderBy?: "asc" | "desc";
-			skip?: number;
-			take?: number;
-		} = {};
-		// Filter by authorId
-		if (q.authorId) {
-			conditions.push({
-				authorId: q.authorId,
-			});
-		}
-		// Filter by title, content, tags
-		if (q.search) {
-			conditions.push({
-				OR: [
-					{
-						title: {
-							contains: q.search,
-							mode: "insensitive",
-						},
-					},
-					{
-						content: {
-							contains: q.search,
-							mode: "insensitive",
-						},
-					},
-					{
-						tags: {
-							has: q.search,
-						},
-					},
-				],
-			});
-		}
-		// Filter by status
-		if (q.status) {
-			conditions.push({
-				status: q.status,
-			});
-		}
-		// Filter by tags
-		if (q.tags) {
-			conditions.push({
-				tags: {
-					hasEvery: q.tags,
-				},
-			});
-		}
-		// Filter by visibility
-		if (q.visibility) {
-			conditions.push({
-				visibility: q.visibility,
-			});
-		}
-		// Filter by isFeatured
-		if (q.isFeatured) {
-			conditions.push({
-				isFeatured: q.isFeatured,
-			});
-		}
-		// Sort
-		if (q.sortBy && q.orderBy) {
-			presentation.sortBy = q.sortBy;
-			presentation.orderBy = q.orderBy;
-		}
-		// Offset pagination
-		if (q.limit && q.page) {
-			presentation.skip = q.limit * (q.page - 1);
-			presentation.take = q.limit;
-		}
-		// Fetch data with filters
-		const result = await prisma.post.findMany({
-			where: {
-				AND: conditions,
-			},
-			skip: presentation.skip,
-			take: presentation.take,
-			orderBy: {
-				[presentation.sortBy as string]: presentation.orderBy,
-			},
-		});
-		// Return result
-		return result;
 	}
+	// Filter by title, content, tags
+	if (q.search) {
+		conditions.push({
+			OR: [
+				{
+					title: {
+						contains: q.search,
+						mode: "insensitive",
+					},
+				},
+				{
+					content: {
+						contains: q.search,
+						mode: "insensitive",
+					},
+				},
+				{
+					tags: {
+						has: q.search,
+					},
+				},
+			],
+		});
+	}
+	// Filter by status
+	if (q.status) {
+		conditions.push({
+			status: q.status,
+		});
+	}
+	// Filter by tags
+	if (q.tags) {
+		conditions.push({
+			tags: {
+				hasEvery: q.tags,
+			},
+		});
+	}
+	// Filter by visibility
+	if (q.visibility) {
+		conditions.push({
+			visibility: q.visibility,
+		});
+	}
+	// Filter by isFeatured
+	if (q.isFeatured) {
+		conditions.push({
+			isFeatured: q.isFeatured,
+		});
+	}
+	// Sort
+	if (q.sortBy && q.orderBy) {
+		presentation.sortBy = q.sortBy;
+		presentation.orderBy = q.orderBy;
+	}
+	// Offset pagination
+	if (q.limit && q.page) {
+		presentation.skip = q.limit * (q.page - 1);
+		presentation.take = q.limit;
+	}
+	// Fetch data with filters
+	const result = await prisma.post.findMany({
+		where: {
+			AND: conditions,
+		},
+		skip: presentation.skip,
+		take: presentation.take,
+		orderBy: {
+			[presentation.sortBy as string]: presentation.orderBy,
+		},
+	});
+	// Count of total data
+	const total = await prisma.post.count({
+		where: {
+			AND: conditions,
+		},
+	});
+	// Return result
+	return {
+		posts: result,
+		total,
+	};
 };
 
 export const postsService = { createPost, getPosts };
