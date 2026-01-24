@@ -5,7 +5,7 @@ import { NextFunction, Request, Response, Router } from "express";
 const router = Router();
 
 // Enum - User Role
-export enum UserRole {
+enum UserRole {
 	USER = "USER",
 	ADMIN = "ADMIN",
 }
@@ -26,7 +26,7 @@ declare global {
 }
 
 const auth = (...roles: UserRole[]) => {
-	async (req: Request, res: Response, next: NextFunction) => {
+	return async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			// User Session
 			const session = await betterAuth.api.getSession({
@@ -71,4 +71,4 @@ const auth = (...roles: UserRole[]) => {
 	};
 };
 
-export { auth };
+export { auth, UserRole };

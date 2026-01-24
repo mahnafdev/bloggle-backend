@@ -3,6 +3,7 @@ import cors from "cors";
 import "dotenv/config";
 import express, { Application } from "express";
 import { auth } from "./lib/auth.ts";
+import { commentsRouter } from "./modules/comments/comments.router.ts";
 import { postsRouter } from "./modules/posts/posts.router.ts";
 //* Express App
 const app: Application = express();
@@ -21,6 +22,7 @@ app.use(
 
 //* Modules
 app.use("/api/v1/posts", postsRouter);
+app.use("/api/v1/comments", commentsRouter);
 
 //* GET /
 app.get("/", (_req, res) => {
