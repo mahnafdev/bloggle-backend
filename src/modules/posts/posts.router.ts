@@ -9,5 +9,7 @@ const router = Router();
 router.post("/", auth(UserRole.USER, UserRole.ADMIN), postsController.createPost);
 // GET /
 router.get("/", postsController.getPosts);
+// GET /:id
+router.get("/:id", postsController.getPost);
 
 export { router as postsRouter };

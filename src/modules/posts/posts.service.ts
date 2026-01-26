@@ -132,4 +132,32 @@ const getPosts = async (q: {
 	};
 };
 
-export const postsService = { createPost, getPosts };
+//* Retrieve a Post
+const getPost = async (id: string): Promise<Post> => {
+	const result = await prisma.post.findUniqueOrThrow({
+		where: {
+			id,
+		},
+		include: {
+			reactions: {
+				select: {
+					id: true,
+					userId: true,
+					type: true,
+				},
+			},
+			comments: {
+				select: {
+					id: true,
+					parentId: true,
+					content: true,
+					_count: true,
+				},
+			},
+			_count: true,
+		},
+	});
+	return result;
+};
+
+export const postsService = { createPost, getPosts, getPost };

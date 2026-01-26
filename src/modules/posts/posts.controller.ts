@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { Post, PostStatus, PostVisibility } from "../../../generated/prisma/client.ts";
 import { postsService } from "./posts.service.ts";
 
-//* Create A Post
+//* Create a Post
 const createPost = async (req: Request, res: Response) => {
 	try {
 		// Nuts and Bolts
@@ -93,4 +93,31 @@ const getPosts = async (req: Request, res: Response) => {
 	}
 };
 
-export const postsController = { createPost, getPosts };
+//* Get a Post
+const getPost = async (req: Request, res: Response) => {
+	try {
+		// Receive params
+		const id = req.params.id;
+		// Nuts and Bolts
+		const data: Post = await postsService.getPost(id);
+		// 200 success response
+		return res.status(200).json({
+			success: true,
+			message: "Post retrieved successfully",
+			data,
+		});
+	} catch (err: any) {
+		// 500 error response
+		return res.status(500).json({
+			success: false,
+			message: "Unable to retrieve the post",
+			error: {
+				code: err.code || undefined,
+				message: err.message || undefined,
+				details: err,
+			},
+		});
+	}
+};
+
+export const postsController = { createPost, getPosts, getPost };
