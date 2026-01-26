@@ -29,10 +29,18 @@ const createComment = async (data: Omit<Comment, "id" | "createdAt" | "updatedAt
 const getComments = async (q: {
 	userId: string | undefined;
 	postId: string | undefined;
+	orderBy: "asc" | "desc" | undefined;
+	page: number | undefined;
+	limit: number | undefined;
 }): Promise<{ comments: Comment[]; total: number }> => {
 	// Retrieve comments with/without filters
 	// Initialize querying objects
 	const conditions: object[] = [];
+	const presentation: {
+		orderBy?: "asc" | "desc";
+		skip?: number;
+		take?: number;
+	} = {};
 	// Filter by userId
 	if (q.userId) {
 		conditions.push({
@@ -45,10 +53,24 @@ const getComments = async (q: {
 			postId: q.postId,
 		});
 	}
+	// Sort
+	if (q.orderBy) {
+		presentation.orderBy = q.orderBy;
+	}
+	// Offset pagination
+	if (q.page && q.limit) {
+		presentation.skip = q.limit * (q.page - 1);
+		presentation.take = q.limit;
+	}
 	// Fetch data with filters
 	const result = await prisma.comment.findMany({
 		where: {
 			AND: conditions,
+		},
+		skip: presentation.skip,
+		take: presentation.take,
+		orderBy: {
+			createdAt: presentation.orderBy,
 		},
 	});
 	// Count of total data

@@ -34,9 +34,15 @@ const getComments = async (req: Request, res: Response) => {
 		const query = req.query;
 		const userId = query.userId as string | undefined;
 		const postId = query.postId as string | undefined;
+		const orderBy = query.orderBy as "asc" | "desc" | undefined;
+		const page = Number(query.page) as number | undefined;
+		const limit = Number(query.limit) as number | undefined;
 		const queryParams = {
 			userId,
 			postId,
+			orderBy,
+			page,
+			limit,
 		};
 		// Nuts and Bolts
 		const result: { comments: Comment[]; total: number } =
