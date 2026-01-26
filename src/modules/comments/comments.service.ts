@@ -72,6 +72,26 @@ const getComments = async (q: {
 		orderBy: {
 			createdAt: presentation.orderBy,
 		},
+		include: {
+			replies: {
+				select: {
+					id: true,
+					content: true,
+					replies: {
+						select: {
+							id: true,
+							content: true,
+							replies: {
+								select: {
+									id: true,
+									content: true,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	});
 	// Count of total data
 	const total = await prisma.comment.count({
