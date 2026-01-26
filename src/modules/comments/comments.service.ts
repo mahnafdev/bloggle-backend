@@ -25,4 +25,43 @@ const createComment = async (data: Omit<Comment, "id" | "createdAt" | "updatedAt
 	return result;
 };
 
-export const commentsService = { createComment };
+//* Retrieve Comments
+const getComments = async (q: {
+	userId: string | undefined;
+	postId: string | undefined;
+}): Promise<{ comments: Comment[]; total: number }> => {
+	// Retrieve comments with/without filters
+	// Initialize querying objects
+	const conditions: object[] = [];
+	// Filter by userId
+	if (q.userId) {
+		conditions.push({
+			userId: q.userId,
+		});
+	}
+	// Filter by postId
+	if (q.postId) {
+		conditions.push({
+			postId: q.postId,
+		});
+	}
+	// Fetch data with filters
+	const result = await prisma.comment.findMany({
+		where: {
+			AND: conditions,
+		},
+	});
+	// Count of total data
+	const total = await prisma.comment.count({
+		where: {
+			AND: conditions,
+		},
+	});
+	// Return result
+	return {
+		comments: result,
+		total,
+	};
+};
+
+export const commentsService = { createComment, getComments };

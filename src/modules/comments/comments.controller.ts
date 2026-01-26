@@ -27,4 +27,48 @@ const createComment = async (req: Request, res: Response) => {
 	}
 };
 
-export const commentsController = { createComment };
+//* Get Comments
+const getComments = async (req: Request, res: Response) => {
+	try {
+		// Receive query params
+		const query = req.query;
+		const userId = query.userId as string | undefined;
+		const postId = query.postId as string | undefined;
+		const queryParams = {
+			userId,
+			postId,
+		};
+		// Nuts and Bolts
+		const result: { comments: Comment[]; total: number } =
+			await commentsService.getComments(queryParams);
+		// Filter useless params
+		const usedQueryParams = Object.fromEntries(
+			Object.entries(queryParams).filter(([_, value]) => {
+				if (!value) return false;
+				if (Array.isArray(value) && value.length === 0) return false;
+				return true;
+			}),
+		);
+		// 200 success response
+		return res.status(200).json({
+			success: true,
+			message: "Comments retrieved successfully",
+			total: result.total,
+			params: usedQueryParams,
+			data: result.comments,
+		});
+	} catch (err: any) {
+		// 500 error response
+		return res.status(500).json({
+			success: false,
+			message: "Unable to retrieve comments",
+			error: {
+				code: err.code || undefined,
+				message: err.message || undefined,
+				details: err,
+			},
+		});
+	}
+};
+
+export const commentsController = { createComment, getComments };
